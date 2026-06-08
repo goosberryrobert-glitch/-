@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>COCOCHAT</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #1f1f2e;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#topbar {
+    background: #141420;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+#logo {
+    color: #7c5cff;
+    font-size: 18px;
+}
+
+select {
+    padding: 6px;
+    border-radius: 6px;
+}
+
+#chat {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.msg {
+    max-width: 70%;
+    padding: 12px;
+    border-radius: 12px;
+    margin: 10px 0;
+    white-space: pre-wrap;
+}
+
+.user {
+    background: #4a7dff;
+    margin-left: auto;
+}
+
+.bot {
+    background: #2c2c3f;
+    margin-right: auto;
+}
+
+#bar {
+    display: flex;
+    padding: 10px;
+    background: #141420;
+}
+
+input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+}
+
+button {
+    margin-left: 10px;
+    padding: 12px 16px;
+    border: none;
+    background: #7c5cff;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div id="topbar">
+    <div id="logo">💬 COCOCHAT</div>
+
+    <select id="mode">
+        <option value="coco">COCO (Gen-Z Mode)</option>
+        <option value="helpful">Helpful</option>
+        <option value="teacher">Teacher</option>
+        <option value="coder">Coder</option>
+    </select>
+</div>
+
+<div id="chat"></div>
+
+<div id="bar">
+    <input id="input" placeholder="yo drop a message..." />
+    <button onclick="send()">Send</button>
+</div>
+
+<script>
+async function send() {
+    const input = document.getElementById("input");
+    const text = input.value.trim();
+    if (!text) return;
+
+    add(text, "user");
+
+    const mode = document.getElementById("mode").value;
+
+    const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, mode })
+    });
+
+    const data = await res.json();
+    add(data.reply, "bot");
+
+    input.value = "";
+}
+
+function add(text, cls) {
+    const div = document.createElement("div");
+    div.className = "msg " + cls;
+    div.innerText = text;
+    document.getElementById("chat").appendChild(div);
+    document.getElementById("chat").scrollTop = 999999;
+}
+</script>
+
+</body>
+</html>
